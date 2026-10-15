@@ -1,12 +1,22 @@
 {
   "manifest_version": 3,
-  "name": "Universal Video Speed Unlocker",
-  "version": "1.0",
-  "description": "Boost video playback speed on any website (even inside iframes) using Alt + keyboard shortcuts.",
+  "name": "Universal Video Speed Unlocker Pro",
+  "version": "2.0",
+  "description": "🚀 Control video speed on ANY site — YouTube, Netflix, Udemy, Coursera & more. Speed memory, presets, HUD overlay. Works on Chrome, Edge, Brave & Opera.",
+  "author": "Universal Speed Tools",
+  "homepage_url": "https://github.com/Coder-Bhai/Universal-Video-Speed-Unlocker",
+  "icons": {
+    "16":  "icons/icon16.png",
+    "32":  "icons/icon32.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "permissions": [
     "scripting",
     "activeTab",
-    "commands"
+    "commands",
+    "storage",
+    "tabs"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -14,30 +24,58 @@
   "background": {
     "service_worker": "background.js"
   },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Universal Video Speed Unlocker Pro",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "32":  "icons/icon32.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "all_frames": true,
+      "run_at": "document_idle"
+    }
+  ],
   "commands": {
     "increase-speed": {
       "suggested_key": {
-        "default": "Alt+Up"
+        "default": "Alt+Up",
+        "mac": "Alt+Up"
       },
       "description": "Increase playback speed by 0.25x"
     },
     "decrease-speed": {
       "suggested_key": {
-        "default": "Alt+Down"
+        "default": "Alt+Down",
+        "mac": "Alt+Down"
       },
       "description": "Decrease playback speed by 0.25x"
     },
     "speed-1x": {
       "suggested_key": {
-        "default": "Alt+Z"
+        "default": "Alt+Z",
+        "mac": "Alt+Z"
       },
-      "description": "Set playback speed to 1x"
+      "description": "Reset playback speed to 1x"
     },
-    "speed-10x": {
+    "speed-max": {
       "suggested_key": {
-        "default": "Alt+X"
+        "default": "Alt+X",
+        "mac": "Alt+X"
       },
-      "description": "Set playback speed to 10x"
+      "description": "Set playback speed to maximum (16x)"
     }
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

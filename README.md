@@ -1,100 +1,132 @@
-# Universal-Video-Speed-Unlocker
-A lightweight Chrome extension that boosts video playback speed beyond limits on any website, including those with embedded iframes (e.g., YouTube, PW, Coursera, etc). Control the speed with simple Alt + keyboard shortcuts.
-Boost video playback speed on any website (even inside iframes) using Alt + keyboard shortcuts.
+# ⚡ Universal Video Speed Unlocker Pro
 
-# ⚡ SpeedHackUniversal (Video Speed Controller++)
+> **The only video speed controller that breaks every site's playback limit — with a stunning UI, speed memory, and fine-grained control.**
+
+---
+
+## 🌟 What makes this different?
+
+| Feature | Other extensions | **This extension** |
+|---|---|---|
+| Works beyond native 10x cap | ❌ | ✅ Up to **16x** |
+| Works inside iframes | ❌ | ✅ All frames |
+| Unlocks sites that block speed | ❌ | ✅ Property override |
+| Beautiful popup UI | ❌ | ✅ Arc meter + slider |
+| Remembers speed per domain | ❌ | ✅ Auto-restore |
+| Fine-grained 0.05x control | ❌ | ✅ Built-in |
+| Bookmark custom speeds | ❌ | ✅ Save any speed |
+| Works in **Shadow DOM** players | ❌ | ✅ Recursive search |
+| **Firefox + Edge + Brave** | ❌ | ✅ All MV3 browsers |
 
 ---
 
 ## ✨ Features
 
-- 🔼 **Increase speed** with `Alt + Up`
-- 🔽 **Decrease speed** with `Alt + Down`
-- ⏩ **Set speed to 10x** with `Alt + X`
-- 🔁 **Reset to 1x speed** with `Alt + Z`
-- ✅ Works only on Regular video players, Embedded videos (iframes), Most educational platforms & streaming sites
-- 🧠 Minimalist: no UI clutter, just results
-- 🪄 Floating popup shows real-time speed change
+- 🚀 **Speed up to 16×** — bypasses native browser cap via property descriptor override
+- 🔓 **Unlock ANY site** — YouTube, Netflix, Udemy, Coursera, PW Skills, Skillshare, Twitch, Vimeo & more
+- 🖼️ **Works in iframes & Shadow DOM** — even deeply nested video players
+- 🎨 **Beautiful Popup** — arc speed meter, smooth slider (0.07× → 16×)
+- 🔖 **Speed Bookmarks** — save and one-click apply your favorite speeds
+- 🧠 **Per-domain speed memory** — auto-restores your speed when you revisit a site
+- ⌨️ **Fine control** — 0.05× step buttons alongside 0.25× coarse steps
+- 🌐 **Cross-browser** — Chrome, Edge, Brave, Opera (all Chromium MV3), Firefox MV3 experimental
+- 💨 **Animated HUD overlay** — gradient arc popup with fade-out
+- 🪶 **No external dependencies** — pure vanilla JS, < 15 KB total
 
 ---
 
-## 📷 Floating Speed Popup
+## 📷 Screenshots
 
-Every time you change the playback speed, a floating popup appears in the bottom-right corner of the page with the updated speed, e.g.:
-![image](https://github.com/user-attachments/assets/3313a037-cdaf-4247-88eb-8d0e0dc97725)
-![image](https://github.com/user-attachments/assets/ab7dc0bd-8f45-4333-9dc3-50afd557d5a0)
+### Popup UI
+A beautiful dark popup with:
+- Live arc speed gauge
+- Drag slider from 0.07× to 16×
+- 14 quick preset chips
+- Bookmark current speed
+- Keyboard shortcut reference
 
-
-
-### Popup Details:
-
-- 🕑 Visible for 2 seconds
-- 🎨 Uses a gradient background with a white border
-- 🖱️ Doesn't interfere with mouse clicks (`pointer-events: none`)
-- 💨 Smooth fade-out animation
+### HUD Overlay (on-page)
+Every speed change shows a gradient floating badge with a progress bar — for 2.2 seconds, then fades out.
 
 ---
 
 ## 🎮 Keyboard Shortcuts
 
-| Action                | Shortcut     |
-|-----------------------|--------------|
-| Increase speed        | `Alt + Up`   |
-| Decrease speed        | `Alt + Down` |
-| Set speed to 1x       | `Alt + Z`    |
-| Set speed to 10x      | `Alt + X`    |
+| Action | Shortcut |
+|---|---|
+| Increase speed (+0.25×) | `Alt + ↑` |
+| Decrease speed (−0.25×) | `Alt + ↓` |
+| Reset to 1× | `Alt + Z` |
+| Max speed (16×) | `Alt + X` |
 
-> ⚠️ Note: Chrome only allows **up to 4 commands** per extension.
+> ✅ You can customize all shortcuts at `chrome://extensions/shortcuts` (or `edge://extensions/shortcuts` in Edge).
 
----
-## if you want youtube focus extension : [SpeedHackYt](https://github.com/Coder-Bhai/SpeedHackYT)
 ---
 
 ## 🚀 Installation
 
-1. Download or clone this repository.
-2. Go to `chrome://extensions/` in your browser.
-3. Enable **Developer Mode** (top right).
-4. Click **Load unpacked** and select the extension folder(Universal Video Speed Unlocker folder).
+### Chrome / Edge / Brave / Opera
+1. Download or clone this repository
+2. Open your browser's extension manager:
+   - Chrome: `chrome://extensions/`
+   - Edge: `edge://extensions/`
+   - Brave: `brave://extensions/`
+   - Opera: `opera://extensions/`
+3. Enable **Developer Mode** (top-right toggle)
+4. Click **Load unpacked** → select the `Universal Video Speed Unlocker` folder
+
+### Firefox (Experimental MV3)
+1. Open `about:debugging#/runtime/this-firefox`
+2. Click **Load Temporary Add-on**
+3. Select any file inside the extension folder
 
 ---
 
-## 🎛 How to Set Custom Keyboard Shortcuts
-You can easily change the default keyboard shortcuts (Alt + Up, Alt + Down, etc.) to your own preferences:
-### 🔧 Steps:
-1. Open Chrome and go to
-   - 👉 chrome://extensions/shortcuts
-2. Find "Universal Video Speed Unlocker" in the list.
-3. Set your preferred shortcuts for:
-   - Increase playback speed
-   - Decrease playback speed
-   - Set speed to 1x
-   - Set speed to 10x
-4. Simply click on the shortcut box and press your desired key combination
-(e.g., Ctrl + Shift + ↑ or Alt + V, etc.)
+## 🔧 How It Works
 
-> ✅ Make sure your shortcuts don’t conflict with existing browser/system shortcuts.
+### 🔓 Speed Cap Bypass
+Most video sites (YouTube, Udemy, etc.) override the native `playbackRate` setter to cap speed at 2× or 3×. This extension uses `Object.defineProperty` to replace that descriptor on each video element, allowing true speeds up to 16×.
+
+### 🧠 Speed Memory
+When you set a speed on `youtube.com`, it's saved in `chrome.storage.local`. Next time you open a YouTube tab, the extension automatically restores your preferred speed — silently, in the background.
+
+### 📡 Cross-frame Injection
+The `content.js` runs in ALL frames (`allFrames: true`) including iframes, so embedded video players on educational platforms get unlocked too.
 
 ---
 
-## 💻 Developer Notes
+## ⌨️ Customizing Shortcuts
 
-- Designed using **Manifest V3**
-- No external scripts or UI
-- focused on all type of sites.
+1. Go to your browser's shortcut editor:
+   - Chrome/Brave: `chrome://extensions/shortcuts`
+   - Edge: `edge://extensions/shortcuts`
+2. Find **Universal Video Speed Unlocker Pro**
+3. Set your preferred key combos (e.g., `Ctrl+Shift+↑`)
 
 ---
 
-## 🧑‍💻 Contributing
-Feel free to fork this repo and suggest new features or submit PRs!
-You can also customize speed increments, add buttons, or UI controls.
+## 🛠️ Developer Notes
+
+- **Manifest V3** — compatible with all modern Chromium browsers
+- **Cross-browser API shim** — `browser.*` (Firefox) vs `chrome.*` (Chrome/Edge) handled automatically
+- **Storage** — uses `chrome.storage.local` for bookmarks and per-domain speed
+- **No UI libraries** — pure vanilla JS + CSS
+
+---
+
+## 🤝 Contributing
+
+PRs welcome! Ideas for future features:
+- [ ] Export/import speed profiles
+- [ ] Site-specific auto-speed rules
+- [ ] Floating draggable speed wheel overlay
 
 ---
 
 ## 📄 License
 
-This project is open-source and free to use under the [MIT License](LICENSE).
+MIT License — free to use, fork, and distribute.
 
 ---
 
-Made with ❤️ to hack your speed and save your time.
+*Made with ❤️ to save your time at 2× the speed.*

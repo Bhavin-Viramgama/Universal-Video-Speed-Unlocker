@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Universal Video Speed Unlocker Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-ring">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="url(#lg1)" stroke="none"/>
+            <defs>
+              <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#a78bfa"/>
+                <stop offset="100%" style="stop-color:#67e8f9"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <div class="app-title">SpeedUnlocker</div>
+          <div class="app-subtitle" id="hostname-label">Detecting...</div>
+        </div>
+      </div>
+      <div class="status-pill" id="status-pill">
+        <span class="status-dot"></span>
+        <span>Active</span>
+      </div>
+    </header>
+
+    <!-- Big Speed Display -->
+    <div class="speed-display-wrap">
+      <div class="speed-arc">
+        <svg class="arc-svg" viewBox="0 0 200 120" width="200" height="120">
+          <!-- Track -->
+          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-linecap="round"/>
+          <!-- Progress -->
+          <path class="arc-progress" id="arc-progress"
+            d="M 20 100 A 80 80 0 0 1 180 100"
+            fill="none" stroke="url(#arcGrad)" stroke-width="8" stroke-linecap="round"
+            stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+          <defs>
+            <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#7c3aed"/>
+              <stop offset="100%" style="stop-color:#06b6d4"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="speed-center">
+          <div class="speed-value" id="speed-value">1.00</div>
+          <div class="speed-unit">× speed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slider -->
+    <div class="slider-section">
+      <span class="slider-label">0.07×</span>
+      <div class="slider-wrap">
+        <input type="range" id="speed-slider" min="7" max="1600" step="1" value="100" />
+        <div class="slider-track-fill" id="slider-fill"></div>
+      </div>
+      <span class="slider-label">16×</span>
+    </div>
+
+    <!-- Step Buttons -->
+    <div class="step-row">
+      <button class="step-btn" id="btn-minus" title="Decrease by 0.25x">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        0.25x
+      </button>
+      <button class="reset-btn" id="btn-reset" title="Reset to 1x">↺ Reset 1×</button>
+      <button class="step-btn" id="btn-plus" title="Increase by 0.25x">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        0.25x
+      </button>
+    </div>
+
+    <!-- Preset Speed Chips -->
+    <div class="section-label">⚡ Quick Presets</div>
+    <div class="presets-grid" id="presets-grid">
+      <!-- populated by JS -->
+    </div>
+
+    <!-- Bookmarks -->
+    <div class="section-label" id="bm-label" style="display:none">🔖 My Bookmarks</div>
+    <div class="bookmarks-row" id="bookmarks-row"></div>
+
+    <!-- Bookmark current -->
+    <div class="actions-row">
+      <button class="action-btn" id="btn-bookmark" title="Bookmark current speed">
+        🔖 Bookmark Speed
+      </button>
+      <button class="action-btn secondary" id="btn-fine-minus" title="Fine -0.05x">
+        ‹ 0.05×
+      </button>
+      <button class="action-btn secondary" id="btn-fine-plus" title="Fine +0.05x">
+        0.05× ›
+      </button>
+    </div>
+
+    <!-- Keyboard shortcuts hint -->
+    <div class="shortcuts-row">
+      <div class="shortcut-item"><kbd>Alt</kbd><kbd>↑</kbd> faster</div>
+      <div class="shortcut-item"><kbd>Alt</kbd><kbd>↓</kbd> slower</div>
+      <div class="shortcut-item"><kbd>Alt</kbd><kbd>Z</kbd> reset</div>
+      <div class="shortcut-item"><kbd>Alt</kbd><kbd>X</kbd> max</div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>Universal Video Speed Unlocker Pro v2.0</span>
+      <a href="chrome://extensions/shortcuts" class="footer-link" id="shortcut-link">Custom shortcuts →</a>
+    </footer>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
