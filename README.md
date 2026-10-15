@@ -1,6 +1,6 @@
 # ⚡ Universal Video Speed Unlocker Pro
 
-> **The only video speed controller that breaks every site's playback limit — with a stunning UI, speed memory, and fine-grained control.**
+> **The only video speed controller that breaks every site's playback limit — with a stunning UI, bookmarkable speeds, and fine-grained control.**
 
 ---
 
@@ -12,7 +12,6 @@
 | Works inside iframes | ❌ | ✅ All frames |
 | Unlocks sites that block speed | ❌ | ✅ Property override |
 | Beautiful popup UI | ❌ | ✅ Arc meter + slider |
-| Remembers speed per domain | ❌ | ✅ Auto-restore |
 | Fine-grained 0.05x control | ❌ | ✅ Built-in |
 | Bookmark custom speeds | ❌ | ✅ Save any speed |
 | Works in **Shadow DOM** players | ❌ | ✅ Recursive search |
@@ -27,7 +26,6 @@
 - 🖼️ **Works in iframes & Shadow DOM** — even deeply nested video players
 - 🎨 **Beautiful Popup** — arc speed meter, smooth slider (0.07× → 16×)
 - 🔖 **Speed Bookmarks** — save and one-click apply your favorite speeds
-- 🧠 **Per-domain speed memory** — auto-restores your speed when you revisit a site
 - ⌨️ **Fine control** — 0.05× step buttons alongside 0.25× coarse steps
 - 🌐 **Cross-browser** — Chrome, Edge, Brave, Opera (all Chromium MV3), Firefox MV3 experimental
 - 💨 **Animated HUD overlay** — gradient arc popup with fade-out
@@ -59,7 +57,7 @@ Every speed change shows a gradient floating badge with a progress bar — for 2
 | Reset to 1× | `Alt + Z` |
 | Max speed (16×) | `Alt + X` |
 
-> ✅ You can customize all shortcuts at `chrome://extensions/shortcuts` (or `edge://extensions/shortcuts` in Edge).
+> ✅ You can customize all shortcuts at `chrome://extensions/shortcuts` (or `edge://extensions/shortcuts` in Edge). The extension popup screen dynamically updates to display your custom shortcuts!
 
 ---
 
@@ -87,9 +85,6 @@ Every speed change shows a gradient floating badge with a progress bar — for 2
 ### 🔓 Speed Cap Bypass
 Most video sites (YouTube, Udemy, etc.) override the native `playbackRate` setter to cap speed at 2× or 3×. This extension uses `Object.defineProperty` to replace that descriptor on each video element, allowing true speeds up to 16×.
 
-### 🧠 Speed Memory
-When you set a speed on `youtube.com`, it's saved in `chrome.storage.local`. Next time you open a YouTube tab, the extension automatically restores your preferred speed — silently, in the background.
-
 ### 📡 Cross-frame Injection
 The `content.js` runs in ALL frames (`allFrames: true`) including iframes, so embedded video players on educational platforms get unlocked too.
 
@@ -100,8 +95,10 @@ The `content.js` runs in ALL frames (`allFrames: true`) including iframes, so em
 1. Go to your browser's shortcut editor:
    - Chrome/Brave: `chrome://extensions/shortcuts`
    - Edge: `edge://extensions/shortcuts`
+   - Or click **Custom shortcuts →** directly at the bottom of the extension popup.
 2. Find **Universal Video Speed Unlocker Pro**
-3. Set your preferred key combos (e.g., `Ctrl+Shift+↑`)
+3. Set your preferred key combos (e.g., `Ctrl+Shift+↑` or `Alt+1`)
+4. The extension popup and button tooltips immediately update to show your new custom keys!
 
 ---
 
@@ -109,7 +106,7 @@ The `content.js` runs in ALL frames (`allFrames: true`) including iframes, so em
 
 - **Manifest V3** — compatible with all modern Chromium browsers
 - **Cross-browser API shim** — `browser.*` (Firefox) vs `chrome.*` (Chrome/Edge) handled automatically
-- **Storage** — uses `chrome.storage.local` for bookmarks and per-domain speed
+- **Storage** — uses `chrome.storage.local` for saved speed bookmarks
 - **No UI libraries** — pure vanilla JS + CSS
 
 ---

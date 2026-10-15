@@ -13,6 +13,9 @@ const MIN    = 0.07;   // Slowest allowed (< 0.1 for ultra slow-mo)
 const MAX    = 16;     // Highest allowed (beyond native 10x cap)
 const PRESET_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 6, 8, 10, 16];
 
+// ---- In-memory last speed (session only, not persisted) ----
+let lastSpeed = 1;
+
 // ---- Helper: inject speed change into all frames ----
 async function injectSpeedCommand(tabId, command, value = null) {
   try {
@@ -35,19 +38,36 @@ function executeSpeedCommand(command, value) {
 
   // Bypass site-imposed playbackRate caps using a property descriptor override
   function unlockVideoElement(video) {
-    if (video._speedUnlocked) return;
+    if (!video || video._speedUnlocked) return;
     try {
       const proto = Object.getPrototypeOf(video);
+      if (!proto) return;
       const descriptor = Object.getOwnPropertyDescriptor(proto, 'playbackRate');
       if (!descriptor) return;
       Object.defineProperty(video, 'playbackRate', {
         get() { return this._currentRate ?? descriptor.get.call(this); },
         set(rate) {
+          // Mark that WE are making this change so the ratechange listener
+          // below doesn't incorrectly treat it as an external reset.
+          this._speedChanging = true;
           this._currentRate = Math.min(MAX, Math.max(MIN, rate));
           try { descriptor.set.call(this, this._currentRate); } catch (_) {}
+          this._speedChanging = false;
         },
         configurable: true
       });
+      // When the browser/site resets playbackRate externally (e.g. YouTube
+      // calling video.load() after an ad), the native rate drops but our
+      // _currentRate is still stale.  ratechange fires for any rate change,
+      // so we use it to sync _currentRate back to the real native value.
+      if (typeof video.addEventListener === 'function') {
+        video.addEventListener('ratechange', function () {
+          if (!this._speedChanging) {
+            const native = descriptor.get.call(this);
+            this._currentRate = native;
+          }
+        });
+      }
       video._speedUnlocked = true;
     } catch (_) {}
   }
@@ -173,11 +193,41 @@ function executeSpeedCommand(command, value) {
   return resultRate;
 }
 
+// ---- Helper: read the real speed from the main frame and broadcast to popup ----
+async function syncSpeedToPopup(tabId) {
+  try {
+    const results = await api.scripting.executeScript({
+      target: { tabId, allFrames: false },
+      func: () => {
+        // Use _currentRate (set by our override) as the authoritative value.
+        const videos = Array.from(document.querySelectorAll('video'));
+        document.querySelectorAll('*').forEach(el => {
+          if (el.shadowRoot) {
+            el.shadowRoot.querySelectorAll('video').forEach(v => {
+              if (!videos.includes(v)) videos.push(v);
+            });
+          }
+        });
+        return videos.length > 0 ? (videos[0]._currentRate ?? videos[0].playbackRate) : null;
+      }
+    });
+    const speed = results?.[0]?.result;
+    if (speed !== null && speed !== undefined) {
+      lastSpeed = speed;
+      // Notify the popup if it happens to be open — it will update its UI.
+      api.runtime.sendMessage({ type: 'SPEED_UPDATED', speed }).catch(() => {});
+    }
+  } catch (_) {}
+}
+
 // ---- Command listener ----
 api.commands.onCommand.addListener(async (command) => {
   const tabs = await api.tabs.query({ active: true, currentWindow: true });
   if (!tabs[0]) return;
   await injectSpeedCommand(tabs[0].id, command);
+  // Push the new speed to the popup (if open) so it stays in sync
+  // with keyboard-driven changes made while the popup is visible.
+  await syncSpeedToPopup(tabs[0].id);
 });
 
 // ---- Message listener (from popup) ----
@@ -187,31 +237,57 @@ api.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       const tabs = await api.tabs.query({ active: true, currentWindow: true });
       if (!tabs[0]) { sendResponse({ ok: false }); return; }
       await injectSpeedCommand(tabs[0].id, 'set-speed', msg.speed);
-      // Persist per-domain speed memory
-      try {
-        const url  = new URL(tabs[0].url);
-        const key  = `speed_${url.hostname}`;
-        await api.storage.local.set({ [key]: msg.speed, lastSpeed: msg.speed });
-      } catch (_) {}
+      // Keep in-memory record for this session only (not persisted across tabs)
+      lastSpeed = msg.speed;
       sendResponse({ ok: true });
     }
 
     if (msg.type === 'GET_STATE') {
-      const tabs = await api.tabs.query({ active: true, currentWindow: true });
-      if (!tabs[0]) { sendResponse({ speed: 1 }); return; }
+      // Always read the REAL playbackRate from the page's video element.
+      // This keeps the popup in sync after events like YouTube resetting
+      // speed to 1x when an ad ends (our lastSpeed cache would be stale).
+      let liveSpeed = lastSpeed;
       try {
-        const url  = new URL(tabs[0].url);
-        const key  = `speed_${url.hostname}`;
-        const data = await api.storage.local.get([key, 'lastSpeed', 'bookmarks']);
-        sendResponse({
-          speed:     data[key] ?? data.lastSpeed ?? 1,
-          hostname:  url.hostname,
-          bookmarks: data.bookmarks ?? []
-        });
+        const tabs = await api.tabs.query({ active: true, currentWindow: true });
+        if (tabs[0] && tabs[0].url && !tabs[0].url.startsWith('chrome://') && !tabs[0].url.startsWith('edge://')) {
+          const results = await api.scripting.executeScript({
+            target: { tabId: tabs[0].id, allFrames: false },
+            func: () => {
+              // _currentRate is the value maintained by our injected override.
+              // After an ad ends, ratechange will have synced it to the native
+              // rate, so this always reflects what the video is actually doing.
+              let speed = null;
+              const videos = Array.from(document.querySelectorAll('video'));
+              document.querySelectorAll('*').forEach(el => {
+                if (el.shadowRoot) {
+                  el.shadowRoot.querySelectorAll('video').forEach(v => {
+                    if (!videos.includes(v)) videos.push(v);
+                  });
+                }
+              });
+              if (videos.length > 0) {
+                speed = videos[0]._currentRate ?? videos[0].playbackRate ?? null;
+              }
+              return speed;
+            }
+          });
+          const actual = results?.[0]?.result;
+          if (actual !== null && actual !== undefined) {
+            liveSpeed = actual;
+            lastSpeed = actual; // re-sync cache to reality
+          }
+        }
       } catch (_) {
-        sendResponse({ speed: 1 });
+        // Special pages (chrome://, edge://) or no scripting access — use cache
       }
+
+      const data = await api.storage.local.get('bookmarks');
+      sendResponse({
+        speed:     liveSpeed,
+        bookmarks: data.bookmarks ?? []
+      });
     }
+
 
     if (msg.type === 'SAVE_BOOKMARK') {
       const data = await api.storage.local.get('bookmarks');
@@ -230,21 +306,23 @@ api.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       await api.storage.local.set({ bookmarks });
       sendResponse({ ok: true, bookmarks });
     }
+
+    if (msg.type === 'GET_COMMANDS') {
+      let cmds = [];
+      try {
+        if (api.commands?.getAll) {
+          cmds = await new Promise((res) => {
+            try {
+              const p = api.commands.getAll((c) => res(c || []));
+              if (p && typeof p.then === 'function') {
+                p.then(c => res(c || [])).catch(() => res([]));
+              }
+            } catch (_) { res([]); }
+          });
+        }
+      } catch (_) {}
+      sendResponse({ commands: cmds });
+    }
   })();
   return true; // async response
-});
-
-// ---- Tab activation: auto-restore remembered speed ----
-api.tabs.onActivated.addListener(async ({ tabId }) => {
-  try {
-    const tab = await api.tabs.get(tabId);
-    if (!tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('edge://')) return;
-    const url   = new URL(tab.url);
-    const key   = `speed_${url.hostname}`;
-    const data  = await api.storage.local.get(key);
-    const speed = data[key];
-    if (speed && speed !== 1) {
-      await injectSpeedCommand(tabId, 'set-speed', speed);
-    }
-  } catch (_) {}
 });

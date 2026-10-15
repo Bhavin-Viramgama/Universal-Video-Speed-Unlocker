@@ -27,7 +27,7 @@
         </div>
         <div>
           <div class="app-title">SpeedUnlocker</div>
-          <div class="app-subtitle" id="hostname-label">Detecting...</div>
+          <div class="app-subtitle">Any site · Any speed · Up to 16×</div>
         </div>
       </div>
       <div class="status-pill" id="status-pill">
@@ -41,7 +41,7 @@
       <div class="speed-arc">
         <svg class="arc-svg" viewBox="0 0 200 120" width="200" height="120">
           <!-- Track -->
-          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-linecap="round"/>
+          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="8" stroke-linecap="round"/>
           <!-- Progress -->
           <path class="arc-progress" id="arc-progress"
             d="M 20 100 A 80 80 0 0 1 180 100"
@@ -108,11 +108,11 @@
     </div>
 
     <!-- Keyboard shortcuts hint -->
-    <div class="shortcuts-row">
-      <div class="shortcut-item"><kbd>Alt</kbd><kbd>↑</kbd> faster</div>
-      <div class="shortcut-item"><kbd>Alt</kbd><kbd>↓</kbd> slower</div>
-      <div class="shortcut-item"><kbd>Alt</kbd><kbd>Z</kbd> reset</div>
-      <div class="shortcut-item"><kbd>Alt</kbd><kbd>X</kbd> max</div>
+    <div class="shortcuts-row" id="shortcuts-row">
+      <div class="shortcut-item" data-command="increase-speed"><kbd>Alt</kbd><kbd>↑</kbd> <span class="shortcut-label">faster</span></div>
+      <div class="shortcut-item" data-command="decrease-speed"><kbd>Alt</kbd><kbd>↓</kbd> <span class="shortcut-label">slower</span></div>
+      <div class="shortcut-item" data-command="speed-1x"><kbd>Alt</kbd><kbd>Z</kbd> <span class="shortcut-label">reset</span></div>
+      <div class="shortcut-item" data-command="speed-max"><kbd>Alt</kbd><kbd>X</kbd> <span class="shortcut-label">max</span></div>
     </div>
 
     <!-- Footer -->
